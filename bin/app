@@ -5,16 +5,18 @@ const router = express.Router();
 const { debugLogger, log } = require("../middleware/logger");
 const { join } = require("path");
 const { readdir } = require("fs");
-const formidable = require("express-formidable")
+const formidable = require("express-formidable");
+const cors = require("cors");
 
+router.use(cors())
 router.use(formidable());
 router.use(debugLogger);
 
 readdir(join(__dirname, "..", "routes"), function(err, files) {
-	if (err) return log.error(err.stack);
-	files.forEach(file => {
-		require(join(__dirname, "..", "routes", file))(router);
-	});
+  if (err) return log.error(err.stack);
+  files.forEach(file => {
+    require(join(__dirname, "..", "routes", file))(router);
+  });
 });
 
 app.use(router);
