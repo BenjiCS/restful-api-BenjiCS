@@ -39,12 +39,21 @@ exports.createProduct = async function(req, res) {
 //     .catch(error => res.json(error));
 // };
 
-exports.getAllProducts = function(req, res) {
-  ProductRef.get().then(docs => {
-    const results = [];
-    docs.forEach(doc => results.push(doc.data()));
-    res.json(results);
-  });
+exports.getAllProducts = async function (req, res) {
+  try {
+      let docs;
+      if (req.query.category) {
+          docs = await ProductRef.where("category", "==", req.query.category).get();
+      } else {
+          docs = await ProductRef.get()
+      }
+      const results = [];
+      docs.forEach(doc => results.push(doc.data()));
+      res.json(results);
+  } catch (error) {
+      res.status(500).end();
+      log.error(error.stack);
+  }
 };
 
 exports.getSingleProductAsync = async function(req, res) {
